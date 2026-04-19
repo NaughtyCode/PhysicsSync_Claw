@@ -1,0 +1,25 @@
+项目概述：
+请根据文档 ./物理同步技术.md 中描述的相关技术，基于Jolt物理引擎、 google filament渲染库、帧同步技术以及KCP协议，设计一套带渲染表现的物理同步技术方案。 
+
+最重要的事情：
+1. 完成的每一步任务都记录下你能识别的任务完成信息，方便重新启动任务时判断要不要重新做这一步；
+2. 任务启动前务必检查已经完成的任务信息，避免重复做相同的事情。
+
+要求如下：
+0. 使用C++ 17
+1. 公共代码存放位置： src/common
+2. 服务器代码存放位置： src/server
+3. 客户端代码存放位置： src/client
+4. 三方库存放位置:external
+5. 构建系统：cmake
+6. Jolt物理引擎git地址：https://github.com/jrouwe/JoltPhysics.git
+7. google filament渲染库git地址：https://github.com/google/filament.git
+8. kcp库git地址：https://github.com/skywind3000/kcp.git
+9. 其他三方请按照需要下载
+10. 单元测试要全面
+11. 需要实现自动化测试、发现问题自动修复
+12. 没完成一步都执行：构建、测试、修复问题，问题修复再执行下一步
+13. 代码需要有严格注释
+14. 执行过程编写合理的文档
+15. 编写客户端、服务器启动脚本
+
