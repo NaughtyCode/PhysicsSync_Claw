@@ -49,6 +49,8 @@ if(MSVC)
     add_compile_options(/W4 /utf-8)
     add_definitions(/DNOMINMAX)
     add_definitions(/D_CRT_SECURE_NO_WARNINGS)
+    # Force dynamic runtime library for all targets
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()

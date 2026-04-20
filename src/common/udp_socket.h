@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <array>
+#include <string>
 #include <string_view>
 
 #if defined(_WIN32)

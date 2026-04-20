@@ -50,8 +50,7 @@ static bool ParseEndpoint(const char* addrStr, uint16_t port, NetEndpoint* out) 
 // ================================================================
 
 NetworkLayer::NetworkLayer()
-    : kcpWriter_(*this)
-    , kcpInputBuf_(NETWORK_MTU)
+    : kcpInputBuf_(NETWORK_MTU)
     , kcpInputAccum_(NETWORK_MTU * 4)
 {
 }

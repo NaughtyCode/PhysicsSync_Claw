@@ -80,10 +80,10 @@ struct OutgoingMessage {
  *   client.Update();
  *   // ...
  */
-class NetworkLayer {
+class NetworkLayer : public KCPWrapper::KCPWriter {
 public:
     NetworkLayer();
-    ~NetworkLayer();
+    ~NetworkLayer() override;
 
     // Non-copyable
     NetworkLayer(const NetworkLayer&) = delete;
@@ -189,7 +189,6 @@ private:
 
     // -- KCP --
     std::unique_ptr<KCPWrapper> kcp_;
-    KCPWrapper::KCPWriter kcpWriter_;
 
     // -- Sequencing --
     uint32_t nextSeqOut_  = 0;

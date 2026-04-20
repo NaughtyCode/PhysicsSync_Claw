@@ -135,7 +135,9 @@ void Quat::ToAxisAngle(Vec3& axis, float& angle) const {
     
     float sinAngle = std::sin(angle * 0.5f);
     if (sinAngle > 1e-8f) {
-        axis = Vec3(nx / sinAngle, ny / sinAngle, nz / sinAngle);
+        axis.x = nx / sinAngle;
+        axis.y = ny / sinAngle;
+        axis.z = nz / sinAngle;
     } else {
         axis = Vec3::Up();
     }
@@ -193,9 +195,6 @@ PhysicsObjectState* PhysicsWorldSnapshot::FindObject(uint32_t objectId) {
     return nullptr;
 }
 
-/**
- * @brief 查找指定ID的对象状态（const版本）
- */
 const PhysicsObjectState* PhysicsWorldSnapshot::FindObject(uint32_t objectId) const {
     for (const auto& obj : objects) {
         if (obj.objectId == objectId) {
@@ -205,11 +204,6 @@ const PhysicsObjectState* PhysicsWorldSnapshot::FindObject(uint32_t objectId) co
     return nullptr;
 }
 
-/**
- * @brief 移除指定ID的对象
- * @param objectId 要移除的对象ID
- * @return 是否成功移除
- */
 bool PhysicsWorldSnapshot::RemoveObject(uint32_t objectId) {
     auto it = std::remove_if(objects.begin(), objects.end(),
         [objectId](const PhysicsObjectState& obj) {
@@ -221,6 +215,23 @@ bool PhysicsWorldSnapshot::RemoveObject(uint32_t objectId) {
     objectCount = static_cast<uint32_t>(objects.size());
     
     return removed;
+}
+
+bool PhysicsWorldSnapshot::Deserialize(const uint8_t*& data) {
+    std::memcpy(&snapshotId, data, sizeof(uint32_t));
+    data += sizeof(uint32_t);
+    std::memcpy(&timestamp, data, sizeof(uint32_t));
+    data += sizeof(uint32_t);
+    std::memcpy(&objectCount, data, sizeof(uint32_t));
+    data += sizeof(uint32_t);
+    
+    objects.resize(objectCount);
+    for (auto& obj : objects) {
+        if (!obj.Deserialize(data)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 } // namespace PhysicsSync

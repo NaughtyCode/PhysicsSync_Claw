@@ -114,6 +114,12 @@ struct Vec3 {
     static constexpr size_t SerializedSizeBytes() {
         return sizeof(float) * 3;
     }
+    
+    /** @brief 计算到另一个向量的距离 */
+    float DistanceTo(const Vec3& other) const;
+    
+    /** @brief 限制向量长度不超过最大值 */
+    Vec3 ClampLength(float maxLength) const;
 };
 
 /**
@@ -199,6 +205,15 @@ struct Quat {
     static constexpr size_t SerializedSizeBytes() {
         return sizeof(float) * 4;
     }
+    
+    /** @brief 从轴角表示构造四元数 */
+    static Quat FromAxisAngle(const Vec3& axis, float angle);
+    
+    /** @brief 将四元数转换为轴角表示 */
+    void ToAxisAngle(Vec3& axis, float& angle) const;
+    
+    /** @brief 计算两个四元数之间的差异 */
+    float Difference(const Quat& other) const;
 };
 
 // ====================================================================
@@ -442,22 +457,16 @@ struct PhysicsWorldSnapshot {
     }
 
     /** @brief 反序列化 */
-    bool Deserialize(const uint8_t*& data) {
-        std::memcpy(&snapshotId, data, sizeof(uint32_t));
-        data += sizeof(uint32_t);
-        std::memcpy(&timestamp, data, sizeof(uint32_t));
-        data += sizeof(uint32_t);
-        std::memcpy(&objectCount, data, sizeof(uint32_t));
-        data += sizeof(uint32_t);
-        
-        objects.resize(objectCount);
-        for (auto& obj : objects) {
-            if (!obj.Deserialize(data)) {
-                return false;
-            }
-        }
-        return true;
-    }
+    bool Deserialize(const uint8_t*& data);
+    
+    /** @brief 查找指定ID的对象状态（非const） */
+    PhysicsObjectState* FindObject(uint32_t objectId);
+    
+    /** @brief 查找指定ID的对象状态（const） */
+    const PhysicsObjectState* FindObject(uint32_t objectId) const;
+    
+    /** @brief 移除指定ID的对象 */
+    bool RemoveObject(uint32_t objectId);
 };
 
 // ====================================================================
