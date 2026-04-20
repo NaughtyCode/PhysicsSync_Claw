@@ -1,47 +1,32 @@
 [
   {
-    "content": "Fix Serialize(float) overwrite bug in serializer.cpp",
-    "activeForm": "Fixing Serialize(float) bug",
+    "content": "分析客户端到服务器和服务器到客户端的消息传递问题",
+    "activeForm": "分析消息传递问题",
     "status": "completed"
   },
   {
-    "content": "Fix MessageFactory::CreateMessage CONNECT_REQUEST",
-    "activeForm": "Fixing MessageFactory",
-    "status": "completed"
-  },
-  {
-    "content": "Fix SimulationThread snapshot copy bug in physics_server.cpp",
-    "activeForm": "Fixing SimulationThread snapshot",
-    "status": "completed"
-  },
-  {
-    "content": "Fix NetworkThread PLAYER_INPUT parsing",
-    "activeForm": "Fixing NetworkThread PLAYER_INPUT",
-    "status": "completed"
-  },
-  {
-    "content": "Rewrite common_tests.cpp to match actual API",
-    "activeForm": "Rewriting common_tests.cpp",
-    "status": "completed"
-  },
-  {
-    "content": "Fix port config inconsistency in batch scripts",
-    "activeForm": "Fixing port consistency",
-    "status": "completed"
-  },
-  {
-    "content": "Fix batch script return 0 issues in both batch scripts",
-    "activeForm": "Fixing batch script return",
-    "status": "completed"
-  },
-  {
-    "content": "Update ServerPlayer construction calls in physics_server.cpp",
-    "activeForm": "Updating ServerPlayer construction",
-    "status": "completed"
-  },
-  {
-    "content": "Build and fix all compilation errors",
-    "activeForm": "Building and fixing compilation",
+    "content": "修复 FRAME_HEADER_SIZE 常量不匹配",
+    "activeForm": "修复 FRAME_HEADER_SIZE",
     "status": "in_progress"
+  },
+  {
+    "content": "修复 KCP 未初始化导致消息无法发送",
+    "activeForm": "修复 KCP 初始化",
+    "status": "pending"
+  },
+  {
+    "content": "修复客户端 Connect() 使用错误的消息类型",
+    "activeForm": "修复连接消息类型",
+    "status": "pending"
+  },
+  {
+    "content": "修复 ProcessUDPRcv 从 KCP 接收数据的逻辑",
+    "activeForm": "修复 KCP 数据接收",
+    "status": "pending"
+  },
+  {
+    "content": "重新编译并测试",
+    "activeForm": "编译测试",
+    "status": "pending"
   }
 ]

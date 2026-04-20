@@ -35,7 +35,7 @@ constexpr int   MAX_INFLIGHT_MESSAGES    = 64;
 constexpr int   HEARTBEAT_INTERVAL_MS    = 1000;
 constexpr float HEARTBEAT_TIMEOUT_S      = 3.0f;
 constexpr int   RECONNECT_MAX_DELAY_MS   = 5000;
-constexpr size_t FRAME_HEADER_SIZE       = sizeof(uint16_t) + sizeof(uint32_t); // msgType + size
+constexpr size_t FRAME_HEADER_SIZE       = 4; // msgType (2) + payloadLen (2)
 
 // ================================================================
 // Forward declarations

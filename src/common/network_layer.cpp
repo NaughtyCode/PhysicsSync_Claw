@@ -109,6 +109,10 @@ bool NetworkLayer::CreateAsServer(const char* addr, uint16_t port) {
         return false;
     }
     udp_.SetNonBlocking(true);
+    // Initialize KCP with a server-side convolution ID
+    // We'll set a unique conv per connected peer; start with 0 as placeholder
+    kcp_ = std::make_unique<KCPWrapper>(0, this);
+    kcp_->SetConfig(GetNodelayConfig(0));
     connected_.store(true);
     serverPeerCount_ = 0;
     return true;
