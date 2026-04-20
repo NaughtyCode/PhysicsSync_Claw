@@ -49,10 +49,10 @@ void WorldSnapshotMessage::Serialize(std::vector<uint8_t>& buffer) const {
 bool WorldSnapshotMessage::Deserialize(const uint8_t*& data) {
     std::memcpy(&snapshotId, data, sizeof(snapshotId)); data += sizeof(snapshotId);
     std::memcpy(&tick, data, sizeof(tick)); data += sizeof(tick);
-    uint32_t dataSize = 0;
     std::memcpy(&dataSize, data, sizeof(dataSize)); data += sizeof(dataSize);
-    if (data + dataSize > data) {
-        // safety check
+    // Bounds check: prevent unbounded memory allocation
+    if (dataSize > 10 * 1024 * 1024) { // 10 MB hard upper limit
+        return false;
     }
     stateData.assign(data, data + dataSize);
     data += dataSize;
@@ -168,7 +168,7 @@ std::unique_ptr<NetworkMessage> MessageFactory::CreateMessage(uint16_t type) {
     // Client messages
     switch (static_cast<ClientMessageType>(type)) {
         case ClientMessageType::CONNECT_REQUEST:
-            return std::make_unique<ConnectAckMessage>();  // placeholder
+            return std::make_unique<PlayerInputMessage>();
         case ClientMessageType::PLAYER_INPUT:
             return std::make_unique<PlayerInputMessage>();
         case ClientMessageType::PING_REQUEST:

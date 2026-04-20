@@ -17,7 +17,7 @@ setlocal enabledelayedexpansion
 
 REM 默认参数
 set SERVER=localhost
-set PORT=7777
+set PORT=9300
 set BUILD_TYPE=Release
 
 REM 解析命令行参数
@@ -97,7 +97,7 @@ echo 用法: start_client.bat [选项]
 echo.
 echo 选项:
 echo   --server ^<地址^>     服务器地址 (默认: localhost)
-echo   --port ^<端口号^>     服务器端口 (默认: 7777)
+echo   --port ^<端口号^>     服务器端口 (默认: 9300)
 echo   --build ^<类型^>      构建类型 (Debug/Release)
 echo   --help              显示此帮助信息
 echo.
@@ -126,8 +126,8 @@ exit /b 0
     
     if errorlevel 1 (
         echo [错误] 构建失败!
-        return 1
+        exit /b 1
     )
     
     echo [构建] 构建成功!
-    return 0
+    exit /b 0

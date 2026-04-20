@@ -57,8 +57,8 @@ struct ServerConfig {
  */
 class ServerPlayer : public NetworkConnection {
 public:
-    ServerPlayer(uint32_t id, uint16_t port)
-        : playerId_(id), connected_(true) {
+    ServerPlayer(uint32_t id, uint16_t port, NetworkLayer* layer)
+        : playerId_(id), connected_(true), networkLayer_(layer) {
         // 为每个客户端创建独立的 KCP 实例
         // 这里用 NetworkLayer 做传输
     }
@@ -66,8 +66,13 @@ public:
     ~ServerPlayer() override = default;
 
     bool Send(const NetworkMessage& message) override {
-        // 通过 NetworkLayer 发送
-        return false;
+        if (!networkLayer_) return false;
+        // 通过 NetworkLayer 转发发送
+        std::vector<uint8_t> payload;
+        message.Serialize(payload);
+        std::vector<uint8_t> frame;
+        networkLayer_->BuildFrame(message.GetType(), payload.data(), payload.size(), frame);
+        return networkLayer_->SendToPlayer(frame, playerId_);
     }
 
     std::unique_ptr<NetworkMessage> Receive() override {
@@ -86,6 +91,7 @@ private:
     uint32_t playerId_;
     NetEndpoint endpoint_;
     std::atomic<bool> connected_;
+    NetworkLayer* networkLayer_ = nullptr;
 };
 
 // ================================================================

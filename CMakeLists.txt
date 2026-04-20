@@ -79,7 +79,8 @@ set(EXTERNAL_DIR ${CMAKE_SOURCE_DIR}/external)
 
 if(EXISTS ${EXTERNAL_DIR}/JoltPhysics)
     message(STATUS "Jolt Physics found at: ${EXTERNAL_DIR}/JoltPhysics")
-    add_subdirectory(${EXTERNAL_DIR}/JoltPhysics Source/build ${CMAKE_BINARY_DIR}/Jolt)
+    # Jolt Physics has CMakeLists.txt in Build/ subdirectory
+    add_subdirectory(${EXTERNAL_DIR}/JoltPhysics/Build BuildOut)
 else()
     message(WARNING "Jolt Physics not found. Please clone into external/JoltPhysics")
     message(WARNING "  git clone https://github.com/jrouwe/JoltPhysics.git external/JoltPhysics")

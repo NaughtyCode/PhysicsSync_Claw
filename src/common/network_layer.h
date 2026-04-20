@@ -150,6 +150,14 @@ public:
     void OnDisconnectedCb(OnDisconnected cb) { onDisconnected_ = std::move(cb); }
 
     /**
+     * @brief Send raw frame data to a specific player by ID (server only)
+     * @param frame The complete frame to send
+     * @param playerId The target player ID
+     * @return true if sent successfully
+     */
+    bool SendToPlayer(const std::vector<uint8_t>& frame, uint32_t playerId);
+
+    /**
      * @brief Get connection statistics
      */
     std::string GetStats() const;
@@ -203,6 +211,7 @@ private:
     bool isServer_               = false;
     uint32_t clientConv_         = 0;   // unique conv per connected client (server side)
     uint32_t serverPeerCount_    = 0;
+    std::unordered_map<uint32_t, NetEndpoint> playerIdToEndpoint_; // playerId -> endpoint mapping
 
     // -- State --
     std::atomic<bool>   connected_   { false };

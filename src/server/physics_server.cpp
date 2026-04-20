@@ -112,7 +112,7 @@ uint32_t PhysicsServer::AddPlayer(const NetEndpoint& endpoint) {
 
     uint32_t playerId = nextPlayerId_++;
 
-    auto player = std::make_unique<ServerPlayer>(playerId, endpoint.port);
+    auto player = std::make_unique<ServerPlayer>(playerId, endpoint.port, &networkLayer_);
     player->SetEndpoint(endpoint);
     players_[playerId] = std::move(player);
 
@@ -211,7 +211,7 @@ void PhysicsServer::NetworkThread() {
                     // 分配玩家ID并添加连接
                     std::lock_guard<std::mutex> lock(playersMutex_);
                     uint32_t pid = playerIdCounter++;
-                    auto player = std::make_unique<ServerPlayer>(pid, 0);
+                    auto player = std::make_unique<ServerPlayer>(pid, 0, &networkLayer_);
                     players_[pid] = std::move(player);
                     playerIdCounter = pid + 1;
 
@@ -228,21 +228,29 @@ void PhysicsServer::NetworkThread() {
                 }
 
                 case ClientMessageType::PLAYER_INPUT: {
-                    // 需要先收到 ConnectAck 才能知道玩家ID
-                    // 这里使用原始数据中的 playerId
-                    if (dummy.size() >= sizeof(PlayerInput)) {
-                        const uint8_t* pData = dummy.data();
+                    // Extract playerId and inputData from the PlayerInputMessage
+                    auto* pim = dynamic_cast<PlayerInputMessage*>(msg.get());
+                    if (pim) {
                         PlayerInput input;
-                        if (input.Deserialize(pData)) {
+                        input.playerId = pim->playerId;
+                        input.inputTick = pim->tick;
+                        // Deserialize inputData from the nested buffer
+                        const uint8_t* pData = pim->inputData.data();
+                        if (pim->inputData.size() >= sizeof(uint32_t) * 4 + sizeof(float) * 4) {
+                            input.Deserialize(pData);
                             input.ComputeHash();
-
-                            std::lock_guard<std::mutex> lock(inputMutex_);
-                            pendingInputs_.emplace_back(input, 0);
-
-                            std::cout << "[PhysicsServer] Input from player "
-                                      << input.playerId
-                                      << " tick=" << input.inputTick << std::endl;
+                        } else {
+                            // Minimal fallback: just set basics from message
+                            input.inputTick = pim->tick;
+                            input.ComputeHash();
                         }
+
+                        std::lock_guard<std::mutex> lock(inputMutex_);
+                        pendingInputs_.emplace_back(input, input.playerId);
+
+                        std::cout << "[PhysicsServer] Input from player "
+                                  << input.playerId
+                                  << " tick=" << input.inputTick << std::endl;
                     }
                     break;
                 }

@@ -1,1 +1,47 @@
-[]
+[
+  {
+    "content": "Fix Serialize(float) overwrite bug in serializer.cpp",
+    "activeForm": "Fixing Serialize(float) bug",
+    "status": "completed"
+  },
+  {
+    "content": "Fix MessageFactory::CreateMessage CONNECT_REQUEST",
+    "activeForm": "Fixing MessageFactory",
+    "status": "completed"
+  },
+  {
+    "content": "Fix SimulationThread snapshot copy bug in physics_server.cpp",
+    "activeForm": "Fixing SimulationThread snapshot",
+    "status": "completed"
+  },
+  {
+    "content": "Fix NetworkThread PLAYER_INPUT parsing",
+    "activeForm": "Fixing NetworkThread PLAYER_INPUT",
+    "status": "completed"
+  },
+  {
+    "content": "Rewrite common_tests.cpp to match actual API",
+    "activeForm": "Rewriting common_tests.cpp",
+    "status": "completed"
+  },
+  {
+    "content": "Fix port config inconsistency in batch scripts",
+    "activeForm": "Fixing port consistency",
+    "status": "completed"
+  },
+  {
+    "content": "Fix batch script return 0 issues in both batch scripts",
+    "activeForm": "Fixing batch script return",
+    "status": "completed"
+  },
+  {
+    "content": "Update ServerPlayer construction calls in physics_server.cpp",
+    "activeForm": "Updating ServerPlayer construction",
+    "status": "completed"
+  },
+  {
+    "content": "Build and fix all compilation errors",
+    "activeForm": "Building and fixing compilation",
+    "status": "in_progress"
+  }
+]

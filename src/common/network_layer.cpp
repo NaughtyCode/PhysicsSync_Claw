@@ -91,8 +91,7 @@ bool NetworkLayer::Unframe(const uint8_t* data, size_t len,
 // (called by KCP when it has data to send over UDP)
 
 int NetworkLayer::OnKCPOutput(const char* buf, int len) {
-    // Cast through the base class static method, which routes to this instance
-    (void)buf; (void)len;
+    SendUDP(reinterpret_cast<const uint8_t*>(buf), len);
     return 0;
 }
 
@@ -137,11 +136,11 @@ bool NetworkLayer::Connect() {
     if (isServer_) return false;
 
     // Send a CONNECT_REQUEST immediately
-    auto msg = std::make_unique<ConnectAckMessage>();
-    ConnectAckMessage* cm = static_cast<ConnectAckMessage*>(msg.get());
-    cm->playerId = 0; // assigned by server
-    cm->serverTick = 0;
-    cm->latency = 0;
+    auto msg = std::make_unique<PlayerInputMessage>();
+    PlayerInputMessage* cm = static_cast<PlayerInputMessage*>(msg.get());
+    cm->playerId = 0;
+    cm->tick = 0;
+    // Empty inputData for connect request
     Send(std::move(msg));
 
     return true;
@@ -361,6 +360,21 @@ void NetworkLayer::BuildServerConnectACK(uint32_t playerId) {
     cm->serverTick = static_cast<uint32_t>(NowTickMS());
     cm->latency = rttMs_;
     Send(std::move(msg));
+}
+
+bool NetworkLayer::SendToPlayer(const std::vector<uint8_t>& frame, uint32_t playerId) {
+    if (!udp_ || frame.empty() || !isServer_) return false;
+
+    // Look up the endpoint for this playerId
+    auto it = playerIdToEndpoint_.find(playerId);
+    if (it == playerIdToEndpoint_.end()) {
+        // Fallback: use last known peer
+        if (!peerEndpoint_.port) return false;
+    } else {
+        return udp_.SendTo(frame.data(), static_cast<int>(frame.size()), it->second) > 0;
+    }
+
+    return udp_.SendTo(frame.data(), static_cast<int>(frame.size()), peerEndpoint_) > 0;
 }
 
 void NetworkLayer::HandleIncomingFrame(const uint8_t* data, size_t len) {

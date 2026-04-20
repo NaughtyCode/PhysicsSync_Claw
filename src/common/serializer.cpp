@@ -78,12 +78,12 @@ bool Serializer::Serialize(uint64_t value) {
 }
 
 bool Serializer::Serialize(float value) {
-    // 直接复制浮点数的字节表示
     uint32_t intRep;
     std::memcpy(&intRep, &value, sizeof(float));
     intRep = HostToNetwork(intRep);
-    std::memcpy(&value, &intRep, sizeof(float));
-    return SerializeRaw(&value, sizeof(float));
+    float netValue;
+    std::memcpy(&netValue, &intRep, sizeof(float));
+    return SerializeRaw(&netValue, sizeof(float));
 }
 
 bool Serializer::Serialize(double value) {

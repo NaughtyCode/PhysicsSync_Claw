@@ -164,7 +164,8 @@ struct WorldSnapshotMessage : public NetworkMessage {
     uint32_t snapshotId;        ///< 快照ID
     uint32_t tick;              ///< 快照对应的tick
     std::vector<uint8_t> stateData;  ///< 序列化后的物理状态数据
-    
+    mutable uint32_t dataSize;  ///< cached size for deserialization
+
     uint16_t GetType() const override { 
         return static_cast<uint16_t>(ServerMessageType::WORLD_SNAPSHOT); 
     }
