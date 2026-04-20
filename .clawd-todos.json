@@ -1,22 +1,32 @@
 [
   {
-    "content": "验证编译是否成功",
-    "activeForm": "验证编译",
-    "status": "completed"
-  },
-  {
-    "content": "启动服务器并检查日志",
-    "activeForm": "启动服务器",
+    "content": "Fix server KCP routing - server uses single KCP with conv=0, can't send back to clients",
+    "activeForm": "Fixing server KCP routing",
     "status": "in_progress"
   },
   {
-    "content": "启动客户端并检查消息收发",
-    "activeForm": "启动客户端",
+    "content": "Verify client-to-server message flow (CONNECT_REQUEST, PLAYER_INPUT)",
+    "activeForm": "Verifying client-to-server flow",
     "status": "pending"
   },
   {
-    "content": "根据日志修复消息收发问题",
-    "activeForm": "修复消息问题",
+    "content": "Verify server-to-client message flow (CONNECT_ACK, WORLD_SNAPSHOT)",
+    "activeForm": "Verifying server-to-client flow",
+    "status": "pending"
+  },
+  {
+    "content": "Add multi-client support - per-client KCP instances and endpoint tracking",
+    "activeForm": "Adding multi-client support",
+    "status": "pending"
+  },
+  {
+    "content": "Rebuild and run single client test",
+    "activeForm": "Rebuilding and testing single client",
+    "status": "pending"
+  },
+  {
+    "content": "Run multiple client test and verify cross-client message relay",
+    "activeForm": "Testing multiple clients",
     "status": "pending"
   }
 ]
