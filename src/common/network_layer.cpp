@@ -161,12 +161,15 @@ void NetworkLayer::Update() {
     // 2. KCP update
     if (kcp_) {
         kcp_->Update(static_cast<uint32_t>(now));
+
+        // 3. Extract data from KCP receive buffer and deliver messages
+        ProcessKcpRcv();
     }
 
-    // 3. Flush retransmissions
+    // 4. Flush retransmissions
     FlushRetransmits();
 
-    // 4. Heartbeat
+    // 5. Heartbeat
     if (now - lastHeartbeatTick_ >= HEARTBEAT_INTERVAL_MS) {
         SendHeartbeat();
     }
@@ -305,6 +308,27 @@ void NetworkLayer::SendHeartbeat() {
     ping->timestamp = lastHeartbeatTick_;
     ping->nonce = static_cast<uint32_t>(lastHeartbeatTick_ & 0xFFFFFFFF);
     Send(std::move(ping));
+}
+
+void NetworkLayer::ProcessKcpRcv() {
+    // Keep reading from KCP until there's no more data available
+    int peekSize = kcp_->PeekSize();
+    while (peekSize > 0) {
+        int bufSize = std::min(peekSize, static_cast<int>(kcpInputBuf_.size()));
+        int n = kcp_->Recv(kcpInputBuf_.data(), bufSize);
+        if (n <= 0) break;
+
+        // kcpInputBuf_ holds the received bytes from KCP
+        // Parse the framed message from KCP-ordered, deduplicated data
+        uint16_t msgType = 0;
+        std::vector<uint8_t> payload;
+        if (Unframe(kcpInputBuf_.data(), static_cast<size_t>(n), msgType, payload)) {
+            HandleIncomingFrame(kcpInputBuf_.data(), static_cast<size_t>(n));
+        }
+
+        // Check if there's more data
+        peekSize = kcp_->PeekSize();
+    }
 }
 
 void NetworkLayer::CheckHeartbeatTimeout() {

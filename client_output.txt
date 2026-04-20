@@ -1,0 +1,31 @@
+========================================
+   PhysicsSync Client
+========================================
+  Server: 127.0.0.1
+  Port:   9300
+========================================
+[PhysicsClient] Initializing...
+  Server: 127.0.0.1:9300
+  Physics Hz: 60
+  Correction: LERP
+[PhysicsClient] Initialization complete.
+[PhysicsClient] Connecting to 127.0.0.1:9300...
+[PhysicsClient] Connection initiated.
+
+[Main] Client is running. Press Ctrl+C to stop.
+[Main] Note: This is a demo client without Filament rendering.
+[PhysicsClient] Starting main loop...
+[PhysicsClient] Connecting to 127.0.0.1:9300...
+[PhysicsClient] Connection initiated.
+[PhysicsClient] Starting client...
+[PhysicsClient] Connecting to 127.0.0.1:9300...
+[PhysicsClient] Connection initiated.
+[PhysicsClient] Simulation thread started.
+[PhysicsClient] Network thread started.
+[Render] Frame 100 (tick: 0, alpha: 0.0349053)
+[Render] Frame 200 (tick: 0, alpha: 0.0702436)
+[Render] Frame 300 (tick: 0, alpha: 0.103389)
+[Render] Frame 400 (tick: 0, alpha: 0.13747)
+[Render] Frame 500 (tick: 0, alpha: 0.171458)
+[Render] Frame 600 (tick: 0, alpha: 0.203556)
+[Render] Frame 700 (tick: 0, alpha: 0.236735)

@@ -1,37 +1,22 @@
 [
   {
-    "content": "分析客户端到服务器和服务器到客户端的消息传递问题",
-    "activeForm": "分析消息传递问题",
+    "content": "验证编译是否成功",
+    "activeForm": "验证编译",
     "status": "completed"
   },
   {
-    "content": "修复 FRAME_HEADER_SIZE 常量不匹配",
-    "activeForm": "修复 FRAME_HEADER_SIZE",
-    "status": "completed"
-  },
-  {
-    "content": "添加 ConnectRequestMessage 解决消息类型路由问题",
-    "activeForm": "添加 ConnectRequestMessage",
-    "status": "completed"
-  },
-  {
-    "content": "修复 KCP 未初始化导致消息无法发送",
-    "activeForm": "修复 KCP 初始化",
+    "content": "启动服务器并检查日志",
+    "activeForm": "启动服务器",
     "status": "in_progress"
   },
   {
-    "content": "修复客户端 Connect() 发送 CONNECT_REQUEST 帧",
-    "activeForm": "修复连接消息类型",
-    "status": "completed"
-  },
-  {
-    "content": "修复 ProcessUDPRcv 从 KCP 接收数据的逻辑",
-    "activeForm": "修复 KCP 数据接收",
+    "content": "启动客户端并检查消息收发",
+    "activeForm": "启动客户端",
     "status": "pending"
   },
   {
-    "content": "重新编译并测试",
-    "activeForm": "编译测试",
+    "content": "根据日志修复消息收发问题",
+    "activeForm": "修复消息问题",
     "status": "pending"
   }
 ]

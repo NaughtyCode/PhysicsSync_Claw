@@ -178,6 +178,7 @@ public:
     // -- Internal helpers --
     void SendUDP(const uint8_t* data, int size);
     void ProcessUDPRcv();
+    void ProcessKcpRcv();
     void SendHeartbeat();
     void CheckHeartbeatTimeout();
     void AckReceived(uint32_t seq);
