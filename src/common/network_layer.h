@@ -163,6 +163,9 @@ public:
     std::string GetStats() const;
 
 public:
+    // -- KCPWriter interface implementation --
+    int OnOutput(const char* buf, int len) override { return OnKCPOutput(buf, len); }
+
     // -- Frame / Unframe --
     static bool BuildFrame(uint16_t msgType, const uint8_t* payload,
                            size_t payloadLen, std::vector<uint8_t>& frame);
