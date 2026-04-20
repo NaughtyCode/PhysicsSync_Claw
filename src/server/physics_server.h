@@ -70,10 +70,9 @@ public:
         // 通过 NetworkLayer 转发发送
         std::vector<uint8_t> payload;
         message.Serialize(payload);
-        // Directly send through network layer
-        return networkLayer_->Send(
-            MessageFactory::CreateMessage(
-                static_cast<uint16_t>(ClientMessageType::PLAYER_INPUT)));
+        std::vector<uint8_t> frame;
+        NetworkLayer::BuildFrame(message.GetType(), payload.data(), payload.size(), frame);
+        return networkLayer_->SendToPlayer(frame, playerId_);
     }
 
     std::unique_ptr<NetworkMessage> Receive() override {

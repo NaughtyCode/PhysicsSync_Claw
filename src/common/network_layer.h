@@ -162,7 +162,7 @@ public:
      */
     std::string GetStats() const;
 
-private:
+public:
     // -- Frame / Unframe --
     static bool BuildFrame(uint16_t msgType, const uint8_t* payload,
                            size_t payloadLen, std::vector<uint8_t>& frame);
