@@ -176,6 +176,24 @@ struct WorldSnapshotMessage : public NetworkMessage {
 };
 
 /**
+ * @brief 连接请求消息
+ */
+struct ConnectRequestMessage : public NetworkMessage {
+    uint16_t GetType() const override {
+        return static_cast<uint16_t>(ClientMessageType::CONNECT_REQUEST);
+    }
+    void Serialize(std::vector<uint8_t>& buffer) const override {
+        buffer.clear();
+    }
+    bool Deserialize(const uint8_t*& data) override {
+        return true;
+    }
+    std::unique_ptr<NetworkMessage> Clone() const override {
+        return std::make_unique<ConnectRequestMessage>();
+    }
+};
+
+/**
  * @brief 玩家输入消息
  */
 struct PlayerInputMessage : public NetworkMessage {

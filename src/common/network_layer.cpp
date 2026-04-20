@@ -129,6 +129,9 @@ bool NetworkLayer::CreateAsClient(const char* addr, uint16_t port) {
     if (!ParseEndpoint(addr, port, &serverEndpoint_)) {
         return false;
     }
+    // Initialize KCP for client side
+    kcp_ = std::make_unique<KCPWrapper>(0, this);
+    kcp_->SetConfig(GetNodelayConfig(0));
     return true;
 }
 
@@ -138,12 +141,8 @@ bool NetworkLayer::CreateAsClient(const char* addr, uint16_t port) {
 bool NetworkLayer::Connect() {
     if (isServer_) return false;
 
-    // Send a CONNECT_REQUEST immediately
-    auto msg = std::make_unique<PlayerInputMessage>();
-    PlayerInputMessage* cm = static_cast<PlayerInputMessage*>(msg.get());
-    cm->playerId = 0;
-    cm->tick = 0;
-    // Empty inputData for connect request
+    // Send a CONNECT_REQUEST immediately (not a PlayerInputMessage)
+    auto msg = std::make_unique<ConnectRequestMessage>();
     Send(std::move(msg));
 
     return true;

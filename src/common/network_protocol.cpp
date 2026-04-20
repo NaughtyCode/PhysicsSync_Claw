@@ -168,7 +168,7 @@ std::unique_ptr<NetworkMessage> MessageFactory::CreateMessage(uint16_t type) {
     // Client messages
     switch (static_cast<ClientMessageType>(type)) {
         case ClientMessageType::CONNECT_REQUEST:
-            return std::make_unique<PlayerInputMessage>();
+            return std::make_unique<ConnectRequestMessage>();
         case ClientMessageType::PLAYER_INPUT:
             return std::make_unique<PlayerInputMessage>();
         case ClientMessageType::PING_REQUEST:
