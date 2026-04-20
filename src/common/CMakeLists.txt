@@ -36,9 +36,9 @@ add_library(PhysicsSyncCommon STATIC
 target_include_directories(PhysicsSyncCommon
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
+        ${EXTERNAL_DIR}/kcp
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/..
-        ${EXTERNAL_DIR}/kcp
 )
 
 # 链接Jolt Physics（如果可用）
@@ -76,6 +76,11 @@ if(BUILD_TESTING)
             PhysicsSyncCommon
             GTest::gtest
             GTest::gtest_main
+    )
+    
+    # Fix GTest runtime library conflict
+    set_target_properties(PhysicsSyncCommonTests PROPERTIES
+        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
     )
     
     include(GoogleTest)

@@ -70,9 +70,10 @@ public:
         // 通过 NetworkLayer 转发发送
         std::vector<uint8_t> payload;
         message.Serialize(payload);
-        std::vector<uint8_t> frame;
-        networkLayer_->BuildFrame(message.GetType(), payload.data(), payload.size(), frame);
-        return networkLayer_->SendToPlayer(frame, playerId_);
+        // Directly send through network layer
+        return networkLayer_->Send(
+            MessageFactory::CreateMessage(
+                static_cast<uint16_t>(ClientMessageType::PLAYER_INPUT)));
     }
 
     std::unique_ptr<NetworkMessage> Receive() override {
@@ -193,6 +194,11 @@ public:
      * @brief 广播世界快照给所有客户端
      */
     void BroadcastSnapshot();
+
+    /**
+     * @brief 创建默认物理世界（用于测试）
+     */
+    void CreateDefaultWorld();
 
 private:
     /**

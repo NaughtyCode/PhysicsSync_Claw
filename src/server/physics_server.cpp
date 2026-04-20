@@ -135,7 +135,7 @@ void PhysicsServer::RemovePlayer(uint32_t playerId) {
 }
 
 uint32_t PhysicsServer::GetPlayerCount() const {
-    std::lock_guard<std::mutex> lock(playersMutex_);
+    std::lock_guard<std::mutex> lock(const_cast<std::mutex&>(playersMutex_));
     return static_cast<uint32_t>(players_.size());
 }
 
@@ -147,7 +147,7 @@ std::string PhysicsServer::GetStatistics() const {
     oss << "Current Tick: " << GetCurrentTick() << std::endl;
     oss << "NetworkLayer: " << networkLayer_.GetStats() << std::endl;
 
-    std::lock_guard<std::mutex> lock(snapshotMutex_);
+    std::lock_guard<std::mutex> lock(const_cast<std::mutex&>(snapshotMutex_));
     oss << "Snapshot Objects: " << currentSnapshot_.objects.size() << std::endl;
     oss << "Last Broadcast Tick: " << lastBroadcastTick_ << std::endl;
 
@@ -342,7 +342,8 @@ void PhysicsServer::SimulationThread() {
 void PhysicsServer::ProcessPendingInputs() {
     std::lock_guard<std::mutex> lock(inputMutex_);
 
-    for (auto& [input, /*playerId*/] : pendingInputs_) {
+    for (auto& pair : pendingInputs_) {
+        auto& input = pair.first;
         // 根据输入更新刚体速度
         auto* playerObj = currentSnapshot_.FindObject(input.playerId);
         if (playerObj && (input.moveX != 0.0f || input.moveY != 0.0f)) {
