@@ -1,32 +1,17 @@
 [
   {
-    "content": "Fix server KCP routing - server uses single KCP with conv=0, can't send back to clients",
-    "activeForm": "Fixing server KCP routing",
+    "content": "Rebuild and test with single client",
+    "activeForm": "Building and testing single client",
     "status": "in_progress"
   },
   {
-    "content": "Verify client-to-server message flow (CONNECT_REQUEST, PLAYER_INPUT)",
-    "activeForm": "Verifying client-to-server flow",
-    "status": "pending"
-  },
-  {
-    "content": "Verify server-to-client message flow (CONNECT_ACK, WORLD_SNAPSHOT)",
-    "activeForm": "Verifying server-to-client flow",
-    "status": "pending"
-  },
-  {
-    "content": "Add multi-client support - per-client KCP instances and endpoint tracking",
-    "activeForm": "Adding multi-client support",
-    "status": "pending"
-  },
-  {
-    "content": "Rebuild and run single client test",
-    "activeForm": "Rebuilding and testing single client",
-    "status": "pending"
-  },
-  {
-    "content": "Run multiple client test and verify cross-client message relay",
+    "content": "Test with 2+ clients - verify each receives snapshots",
     "activeForm": "Testing multiple clients",
+    "status": "pending"
+  },
+  {
+    "content": "Fix any remaining issues found during testing",
+    "activeForm": "Fixing any remaining issues",
     "status": "pending"
   }
 ]
