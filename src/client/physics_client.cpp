@@ -208,14 +208,15 @@ std::string PhysicsClient::GetStatistics() const {
 void PhysicsClient::Run() {
     std::cout << "[PhysicsClient] Starting main loop..." << std::endl;
 
+    // 确保已连接
     if (!IsConnected()) {
         if (!Connect()) {
             std::cerr << "[PhysicsClient] Failed to connect, exiting." << std::endl;
             return;
         }
+        // 连接成功后启动线程
+        Start();
     }
-
-    Start();
 
     auto lastFrameTime = std::chrono::high_resolution_clock::now();
 

@@ -198,29 +198,30 @@ void PhysicsServer::NetworkThread() {
         while (auto msg = networkLayer_.Receive()) {
             uint16_t type = msg->GetType();
 
-            // 直接处理序列化数据
-            // 先构建帧
-            std::vector<uint8_t> dummy;
-            msg->Serialize(dummy);
-
             switch (static_cast<ClientMessageType>(type)) {
                 case ClientMessageType::CONNECT_REQUEST: {
-                    // 新连接
-                    std::cout << "[PhysicsServer] Connect request received." << std::endl;
+                    // 新连接 - networkLayer_ already has peerEndpoint_ from UDP receive
+                    std::cout << "[PhysicsServer] Connect request received from "
+                              << networkLayer_.peerEndpoint_.ToString() << std::endl;
 
                     // 分配玩家ID并添加连接
-                    std::lock_guard<std::mutex> lock(playersMutex_);
                     uint32_t pid = playerIdCounter++;
-                    auto player = std::make_unique<ServerPlayer>(pid, 0, &networkLayer_);
-                    players_[pid] = std::move(player);
+                    {
+                        std::lock_guard<std::mutex> lock(playersMutex_);
+                        auto player = std::make_unique<ServerPlayer>(pid, 0, &networkLayer_);
+                        player->SetEndpoint(networkLayer_.peerEndpoint_);
+                        players_[pid] = std::move(player);
+                    }
+                    // 记录 endpoint -> playerId 映射
+                    networkLayer_.playerIdToEndpoint_[pid] = networkLayer_.peerEndpoint_;
                     playerIdCounter = pid + 1;
 
-                    // 发送连接确认
+                    // 发送连接确认到特定玩家
                     auto ack = std::make_unique<ConnectAckMessage>();
                     ack->playerId = pid;
                     ack->serverTick = GetCurrentTick();
                     ack->latency = networkLayer_.GetLatency();
-                    networkLayer_.Send(std::move(ack));
+                    networkLayer_.Send(std::move(ack), pid);
 
                     std::cout << "[PhysicsServer] Player " << pid
                               << " assigned ID, total: " << players_.size() << std::endl;
@@ -228,19 +229,16 @@ void PhysicsServer::NetworkThread() {
                 }
 
                 case ClientMessageType::PLAYER_INPUT: {
-                    // Extract playerId and inputData from the PlayerInputMessage
                     auto* pim = dynamic_cast<PlayerInputMessage*>(msg.get());
                     if (pim) {
                         PlayerInput input;
                         input.playerId = pim->playerId;
                         input.inputTick = pim->tick;
-                        // Deserialize inputData from the nested buffer
                         const uint8_t* pData = pim->inputData.data();
                         if (pim->inputData.size() >= sizeof(uint32_t) * 4 + sizeof(float) * 4) {
                             input.Deserialize(pData);
                             input.ComputeHash();
                         } else {
-                            // Minimal fallback: just set basics from message
                             input.inputTick = pim->tick;
                             input.ComputeHash();
                         }
@@ -256,13 +254,13 @@ void PhysicsServer::NetworkThread() {
                 }
 
                 case ClientMessageType::PING_REQUEST: {
-                    // 回复 PONG
+                    // 回复 PONG 给发送者 (playerId=0 means last known peer)
                     auto pong = std::make_unique<PingMessage>();
                     pong->timestamp = static_cast<uint64_t>(
                         std::chrono::duration_cast<std::chrono::milliseconds>(
                             std::chrono::steady_clock::now().time_since_epoch()).count());
                     pong->nonce = 0;
-                    networkLayer_.Send(std::move(pong));
+                    networkLayer_.Send(std::move(pong), 0);
                     break;
                 }
 
@@ -372,19 +370,20 @@ void PhysicsServer::BroadcastSnapshotToAll() {
     msg->tick = GetCurrentTick();
     msg->stateData = std::move(snapshotData);
 
-    // 发送给所有玩家
-    if (players_.empty()) {
-        // 如果没有玩家，广播到网络层
-        networkLayer_.Send(std::move(msg));
-        return;
+    // 发送给每个玩家（通过 playerId 路由到各自的 endpoint）
+    int sentCount = 0;
+    {
+        std::lock_guard<std::mutex> lock(playersMutex_);
+        for (auto& [id, player] : players_) {
+            auto msgCopy = std::make_unique<WorldSnapshotMessage>(*msg.get());
+            networkLayer_.Send(std::move(msgCopy), id);
+            sentCount++;
+        }
     }
-
-    // 服务器模式下 NetworkLayer 自动路由到已知端点
-    networkLayer_.Send(std::move(msg));
 
     std::cout << "[PhysicsServer] Broadcast snapshot " << GetCurrentTick()
               << " with " << currentSnapshot_.objects.size()
-              << " objects to " << players_.size() << " player(s)." << std::endl;
+              << " objects to " << sentCount << " player(s)." << std::endl;
 }
 
 void PhysicsServer::CreateDefaultWorld() {

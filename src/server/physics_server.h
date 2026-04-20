@@ -65,14 +65,11 @@ public:
 
     ~ServerPlayer() override = default;
 
+    // ServerPlayer doesn't directly send - the PhysicsServer calls networkLayer_.Send(msg, playerId)
+    // This method is here to satisfy the interface but is not used.
     bool Send(const NetworkMessage& message) override {
-        if (!networkLayer_) return false;
-        // 通过 NetworkLayer 转发发送
-        std::vector<uint8_t> payload;
-        message.Serialize(payload);
-        std::vector<uint8_t> frame;
-        NetworkLayer::BuildFrame(message.GetType(), payload.data(), payload.size(), frame);
-        return networkLayer_->SendToPlayer(frame, playerId_);
+        (void)message;
+        return false;
     }
 
     std::unique_ptr<NetworkMessage> Receive() override {

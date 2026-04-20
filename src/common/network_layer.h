@@ -7,6 +7,7 @@
  * - Reliable message delivery via KCP
  * - Message ordering and deduplication
  * - Simple heartbeat / latency tracking
+ * - Multi-client support for server mode (per-client KCP instances)
  */
 
 #pragma once
@@ -20,6 +21,7 @@
 #include <vector>
 #include <deque>
 #include <functional>
+#include <unordered_map>
 #include <mutex>
 #include <atomic>
 #include <array>
@@ -58,6 +60,16 @@ struct OutgoingMessage {
     uint32_t     seq     = 0;
     uint64_t     sentAt  = 0;   // KCP tick when last sent
     uint8_t      retries = 0;
+};
+
+// ================================================================
+// Per-client KCP context (server side)
+// ================================================================
+
+struct ClientContext {
+    std::unique_ptr<KCPWrapper> kcp;
+    NetEndpoint endpoint;
+    bool connected = false;
 };
 
 // ================================================================
@@ -105,7 +117,7 @@ public:
 
     /**
      * @brief Perform a non-blocking connect (client only)
-     * Returns true when connection is established.
+     * Returns true when connection is initiated.
      */
     bool Connect();
 
@@ -117,10 +129,21 @@ public:
 
     /**
      * @brief Send a constructed NetworkMessage
+     * In client mode: sends to the server.
+     * In server mode: sends to the given playerId (or to the default peer if no playerId given).
      * @param msg Message to send
+     * @param playerId Optional player ID (server only). If 0, sends to default peer.
      * @return true if accepted for sending
      */
-    bool Send(std::unique_ptr<NetworkMessage> msg);
+    bool Send(std::unique_ptr<NetworkMessage> msg, uint32_t playerId = 0);
+
+    /**
+     * @brief Send to a specific peer endpoint directly (server mode)
+     * @param msg Message to send
+     * @param target The endpoint to send to
+     * @return true if accepted
+     */
+    bool SendToPeer(std::unique_ptr<NetworkMessage> msg, const NetEndpoint& target);
 
     /**
      * @brief Try to receive a message (non-blocking)
@@ -131,7 +154,7 @@ public:
     /**
      * @brief Check if connected to remote
      */
-    bool IsConnected() const { return connected_; }
+    bool IsConnected() const { return connected_.load(); }
 
     /**
      * @brief Get last known RTT in milliseconds
@@ -176,20 +199,37 @@ public:
     int OnKCPOutput(const char* buf, int len);
 
     // -- Internal helpers --
-    void SendUDP(const uint8_t* data, int size);
+    void SendUDP(const uint8_t* data, int size, const NetEndpoint& target);
     void ProcessUDPRcv();
     void ProcessKcpRcv();
     void SendHeartbeat();
     void CheckHeartbeatTimeout();
     void AckReceived(uint32_t seq);
     void FlushRetransmits();
-    void BuildServerConnectACK(uint32_t playerId);
-    void HandleIncomingFrame(const uint8_t* data, size_t len);
+    void HandleIncomingFrame(const uint8_t* data, size_t len, uint32_t playerId = 0);
+
+    // -- Server peer management --
+    std::vector<uint32_t> GetAllClientIds() const;
 
     // -- UDP --
     UDPSocket udp_;
     NetEndpoint serverEndpoint_;  // for client: where to send
-    NetEndpoint peerEndpoint_;    // for server: last seen peer
+    NetEndpoint peerEndpoint_;    // for server: last seen peer (legacy compatibility)
+
+    // -- Client mode KCP --
+    std::unique_ptr<KCPWrapper> clientKcp_;
+
+    // -- Server mode: per-client KCP contexts --
+    // Maps (ip0<<24|ip1<<16|ip2<<8|ip3) -> ClientContext
+    uint32_t GetEndpointKey(const NetEndpoint& ep) const;
+    ClientContext* GetOrCreateClientContext(const NetEndpoint& ep);
+    ClientContext* GetClientContextByPlayerId(uint32_t playerId) const;
+    std::vector<NetEndpoint> GetAllClientEndpoints() const;
+
+    // -- Client endpoint -> playerId mapping --
+    std::unordered_map<uint32_t, uint32_t> endpointToPlayerId_; // endpointKey -> playerId
+    // -- playerId -> endpoint mapping --
+    std::unordered_map<uint32_t, NetEndpoint> playerIdToEndpoint_; // playerId -> endpoint
 
     // -- KCP --
     std::unique_ptr<KCPWrapper> kcp_;
@@ -212,9 +252,8 @@ public:
 
     // -- Server peer management --
     bool isServer_               = false;
-    uint32_t clientConv_         = 0;   // unique conv per connected client (server side)
+    uint32_t nextPlayerId_       = 1;
     uint32_t serverPeerCount_    = 0;
-    std::unordered_map<uint32_t, NetEndpoint> playerIdToEndpoint_; // playerId -> endpoint mapping
 
     // -- State --
     std::atomic<bool>   connected_   { false };

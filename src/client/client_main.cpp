@@ -15,16 +15,19 @@
 #include <csignal>
 #include <cstring>
 #include <cstdlib>
+#include <atomic>
 
 namespace {
     PhysicsSync::PhysicsClient* g_client = nullptr;
+    std::atomic<bool> g_running{true};
 
     void SignalHandler(int signal) {
         (void)signal;
+        g_running = false;
         if (g_client && g_client->IsConnected()) {
             std::cout << "\n[Main] Received signal " << signal
                       << ", shutting down..." << std::endl;
-            g_client->Disconnect();
+            g_client->Stop();
         }
     }
 
@@ -70,12 +73,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    std::cout << "========================================" << std::endl;
+    std::cout << "===========================================================" << std::endl;
     std::cout << "   PhysicsSync Client" << std::endl;
-    std::cout << "========================================" << std::endl;
+    std::cout << "===========================================================" << std::endl;
     std::cout << "  Server: " << serverHost << std::endl;
     std::cout << "  Port:   " << port << std::endl;
-    std::cout << "========================================" << std::endl;
+    std::cout << "===========================================================" << std::endl;
 
     // 创建并初始化客户端
     ClientConfig config(serverHost, port);
@@ -88,21 +91,24 @@ int main(int argc, char* argv[]) {
 
     g_client = &client;
 
-    // 连接到服务器
-    if (!client.Connect()) {
-        std::cerr << "Failed to connect to server!" << std::endl;
-        return 1;
-    }
-
     std::cout << "\n[Main] Client is running. Press Ctrl+C to stop." << std::endl;
     std::cout << "[Main] Note: This is a demo client without Filament rendering." << std::endl;
 
+    // 启动客户端（内部会连接、启动网络线程和模拟线程）
+    client.Start();
+
     // 模拟输入线程 - 产生正弦波移动
-    std::thread inputThread([&client, &serverHost, port]() {
+    std::thread inputThread([&client]() {
         PlayerInput input(1, 0);
         int tick = 0;
 
-        while (client.IsConnected()) {
+        while (g_running.load()) {
+            // 等待连接到服务器
+            if (!client.IsConnected()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                continue;
+            }
+
             // 模拟移动输入（正弦波）
             input.moveX = std::sin(tick * 0.1f) * 0.5f;
             input.moveY = 0.0f;
@@ -112,7 +118,7 @@ int main(int argc, char* argv[]) {
             input.ComputeHash();
 
             if (!client.SendInput(input)) {
-                std::cout << "[Input] Send failed, server not connected?" << std::endl;
+                // 发送失败但继续尝试
             }
 
             tick++;
@@ -120,8 +126,13 @@ int main(int argc, char* argv[]) {
         }
     });
 
-    // 运行主循环
-    client.Run();
+    // 主循环 - 等待用户中断
+    while (g_running.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+
+    // 停止客户端
+    client.Stop();
 
     if (inputThread.joinable()) {
         inputThread.join();
