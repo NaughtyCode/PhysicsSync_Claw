@@ -103,13 +103,14 @@ void RenderingObjectManager::destroy() {
 
     // 销毁所有渲染对象
     for (auto& [objectId, data] : renderObjects_) {
+        if (data.renderable != nullptr && renderableMgr_) {
+            renderableMgr_->destroy(static_cast<filament::Entity>(reinterpret_cast<uintptr_t>(data.renderable)));
+        }
         if (data.renderEntity != utils::Entity::INVALID() && scene_) {
             scene_->removeEntity(data.renderEntity);
         }
-        if (data.renderable != filament::Camera::INVALID()) {
-            renderableMgr_->destroy(data.renderable);
-        }
-        if (data.transformInstance) {
+        // transformManager 的 destroy 接受 entity，不是 instance
+        if (data.renderEntity != utils::Entity::INVALID() && transformMgr_) {
             transformMgr_->destroy(data.renderEntity);
         }
     }
@@ -182,11 +183,11 @@ bool RenderingObjectManager::destroyObject(uint32_t objectId) {
 
     RenderObjectData& data = it->second;
 
+    if (data.renderable != nullptr && renderableMgr_) {
+        renderableMgr_->destroy(static_cast<filament::Entity>(reinterpret_cast<uintptr_t>(data.renderable)));
+    }
     if (data.renderEntity != utils::Entity::INVALID() && scene_) {
         scene_->removeEntity(data.renderEntity);
-    }
-    if (data.renderable != filament::Camera::INVALID()) {
-        renderableMgr_->destroy(data.renderable);
     }
 
     // 清理材质缓存
@@ -286,8 +287,8 @@ void RenderingObjectManager::setVisible(uint32_t objectId, bool visible) {
     if (it == renderObjects_.end()) return;
 
     RenderObjectData& data = it->second;
-    if (data.renderable != filament::Camera::INVALID()) {
-        renderableMgr_->setVisibility(data.renderable, visible);
+    if (data.renderable != nullptr) {
+        renderableMgr_->setVisibility(static_cast<filament::Entity>(reinterpret_cast<uintptr_t>(data.renderable)), visible);
     }
 }
 

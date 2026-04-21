@@ -5,11 +5,17 @@
  * 测试渲染对象管理器、输入处理器和物理状态同步逻辑。
  */
 
+#define _USE_MATH_DEFINES  // 确保 M_PI_2 等数学常量在 Windows 上可用
 #include <gtest/gtest.h>
 #include "../common/physics_state.h"
 #include "InputHandler.h"
 #include <cmath>
 #include <cstring>
+
+// Windows 兼容性：确保 M_PI_2 定义
+#ifndef M_PI_2
+#define M_PI_2 1.57079632679489661923  // pi/2
+#endif
 
 namespace PhysicsSync {
 

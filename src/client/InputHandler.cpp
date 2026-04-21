@@ -141,18 +141,18 @@ Vec2 InputHandler::computeMoveVector() const {
     Vec2 move{0.0f, 0.0f};
 
     // W/S: 前后移动 (Y 轴)
-    if (isKeyDown(0x57)) { // W
+    if (isKeyDown(KEY_W)) {
         move.y += 1.0f;
     }
-    if (isKeyDown(0x53)) { // S
+    if (isKeyDown(KEY_S)) {
         move.y -= 1.0f;
     }
 
     // A/D: 左右移动 (X 轴)
-    if (isKeyDown(0x41)) { // A
+    if (isKeyDown(KEY_A)) {
         move.x -= 1.0f;
     }
-    if (isKeyDown(0x44)) { // D
+    if (isKeyDown(KEY_D)) {
         move.x += 1.0f;
     }
 

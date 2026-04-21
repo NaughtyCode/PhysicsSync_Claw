@@ -104,8 +104,8 @@ struct RenderObjectConfig {
 struct RenderObjectData {
     /// Filament 渲染实体
     utils::Entity renderEntity = utils::Entity::INVALID();
-    /// 渲染可组件实体
-    filament::Camera renderable = filament::Camera::INVALID();
+    /// 渲染组件句柄（RenderableManager 返回的句柄，用于标识可渲染对象）
+    void* renderable = nullptr;
     /// 变换实例句柄
     void* transformInstance = nullptr;
     /// 当前物理位置

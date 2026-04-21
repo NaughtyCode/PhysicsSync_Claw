@@ -116,6 +116,19 @@ public:
     bool isInitialized() const { return initialized_; }
     void setWndProcCallback(WndProcCallback cb) { wndProcCallback_ = std::move(cb); }
 
+    // ================================================================
+    // Windows 虚拟键码常量（供测试和其他模块使用）
+    // ================================================================
+
+    /** @brief Windows 虚拟键码：W 键 */
+    static constexpr uint8_t KEY_W = 0x57;
+    /** @brief Windows 虚拟键码：A 键 */
+    static constexpr uint8_t KEY_A = 0x41;
+    /** @brief Windows 虚拟键码：S 键 */
+    static constexpr uint8_t KEY_S = 0x53;
+    /** @brief Windows 虚拟键码：D 键 */
+    static constexpr uint8_t KEY_D = 0x44;
+
 private:
     void updateKeyStates();
     Vec2 computeMoveVector() const;

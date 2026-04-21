@@ -120,13 +120,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     std::string serverHost = "127.0.0.1";
     uint16_t port = 9300;
 
-    for (int i = 1; i < __argc; i++) {
-        if (strcmp(__argv[i], "--server") == 0 && i + 1 < __argc) {
-            serverHost = __argv[++i];
-        } else if (strcmp(__argv[i], "--port") == 0 && i + 1 < __argc) {
-            port = static_cast<uint16_t>(std::atoi(__argv[++i]));
-        } else if (strcmp(__argv[i], "--help") == 0) {
-            PrintUsage(__argv[0]);
+    for (int i = 1; i < _argc; i++) {
+        if (strcmp(_argv[i], "--server") == 0 && i + 1 < _argc) {
+            serverHost = _argv[++i];
+        } else if (strcmp(_argv[i], "--port") == 0 && i + 1 < _argc) {
+            port = static_cast<uint16_t>(std::atoi(_argv[++i]));
+        } else if (strcmp(_argv[i], "--help") == 0) {
+            PrintUsage(_argv[0]);
             return 0;
         }
     }
