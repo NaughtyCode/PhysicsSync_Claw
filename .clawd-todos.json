@@ -2,32 +2,37 @@
   {
     "content": "分析项目结构和现有代码",
     "activeForm": "分析项目结构和现有代码",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
-    "content": "创建 src/client 目录结构和 TODO 清单",
-    "activeForm": "创建客户端目录结构",
-    "status": "pending"
+    "content": "创建渲染基础设施头文件 (FilamentRenderer.h, RenderingObjectManager.h, InputHandler.h)",
+    "activeForm": "创建渲染基础设施头文件",
+    "status": "completed"
   },
   {
-    "content": "集成 Google Filament 渲染库到 external/filament",
-    "activeForm": "集成 Filament 渲染库",
-    "status": "pending"
+    "content": "实现渲染基础设施源文件 (FilamentRenderer.cpp, RenderingObjectManager.cpp, InputHandler.cpp)",
+    "activeForm": "实现渲染基础设施源文件",
+    "status": "completed"
   },
   {
-    "content": "实现物理物体与渲染对象的映射",
+    "content": "实现物理-渲染对象映射和状态同步",
     "activeForm": "实现物理-渲染对象映射",
-    "status": "pending"
+    "status": "completed"
   },
   {
-    "content": "实现服务器状态同步到渲染对象",
-    "activeForm": "实现状态同步",
-    "status": "pending"
-  },
-  {
-    "content": "实现 WASD 键盘控制玩家物体",
+    "content": "实现 WASD 键盘控制",
     "activeForm": "实现 WASD 键盘控制",
-    "status": "pending"
+    "status": "completed"
+  },
+  {
+    "content": "更新 CMakeLists.txt 集成 Filament",
+    "activeForm": "更新 CMakeLists.txt",
+    "status": "completed"
+  },
+  {
+    "content": "更新客户端主程序以集成渲染",
+    "activeForm": "更新客户端主程序",
+    "status": "in_progress"
   },
   {
     "content": "编写单元测试",
@@ -36,7 +41,7 @@
   },
   {
     "content": "构建验证并生成可执行文件",
-    "activeForm": "构建验证并生成可执行文件",
+    "activeForm": "构建验证",
     "status": "pending"
   },
   {
