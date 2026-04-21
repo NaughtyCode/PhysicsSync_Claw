@@ -40,13 +40,13 @@
     "status": "completed"
   },
   {
-    "content": "构建验证并生成可执行文件",
-    "activeForm": "构建验证",
-    "status": "pending"
-  },
-  {
     "content": "编写配套文档",
     "activeForm": "编写配套文档",
+    "status": "completed"
+  },
+  {
+    "content": "构建验证并生成可执行文件",
+    "activeForm": "构建验证",
     "status": "in_progress"
   }
 ]
