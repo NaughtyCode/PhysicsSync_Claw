@@ -32,12 +32,12 @@
   {
     "content": "更新客户端主程序以集成渲染",
     "activeForm": "更新客户端主程序",
-    "status": "in_progress"
+    "status": "completed"
   },
   {
     "content": "编写单元测试",
     "activeForm": "编写单元测试",
-    "status": "pending"
+    "status": "completed"
   },
   {
     "content": "构建验证并生成可执行文件",
@@ -47,6 +47,6 @@
   {
     "content": "编写配套文档",
     "activeForm": "编写配套文档",
-    "status": "pending"
+    "status": "in_progress"
   }
 ]

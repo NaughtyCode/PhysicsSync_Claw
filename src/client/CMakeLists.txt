@@ -110,3 +110,27 @@ if(TARGET Jolt)
 endif()
 
 message(STATUS "PhysicsSyncClient built with rendering support")
+
+# 客户端测试（需要 RenderObjectManager 但不需要 Filament 运行时）
+if(BUILD_TESTING)
+    add_executable(PhysicsSyncClientTests
+        client_tests.cpp
+    )
+    
+    target_link_libraries(PhysicsSyncClientTests
+        PRIVATE
+            PhysicsSyncClient
+            PhysicsSyncCommon
+            GTest::gtest
+            GTest::gtest_main
+    )
+    
+    set_target_properties(PhysicsSyncClientTests PROPERTIES
+        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL"
+    )
+    
+    include(GoogleTest)
+    gtest_discover_tests(PhysicsSyncClientTests)
+    
+    add_dependencies(PhysicsSyncClientTests PhysicsSyncCommon PhysicsSyncClient)
+endif()
