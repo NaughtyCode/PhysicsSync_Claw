@@ -1,17 +1,47 @@
 [
   {
-    "content": "Rebuild and test with single client",
-    "activeForm": "Building and testing single client",
+    "content": "分析项目结构和现有代码",
+    "activeForm": "分析项目结构和现有代码",
     "status": "in_progress"
   },
   {
-    "content": "Test with 2+ clients - verify each receives snapshots",
-    "activeForm": "Testing multiple clients",
+    "content": "创建 src/client 目录结构和 TODO 清单",
+    "activeForm": "创建客户端目录结构",
     "status": "pending"
   },
   {
-    "content": "Fix any remaining issues found during testing",
-    "activeForm": "Fixing any remaining issues",
+    "content": "集成 Google Filament 渲染库到 external/filament",
+    "activeForm": "集成 Filament 渲染库",
+    "status": "pending"
+  },
+  {
+    "content": "实现物理物体与渲染对象的映射",
+    "activeForm": "实现物理-渲染对象映射",
+    "status": "pending"
+  },
+  {
+    "content": "实现服务器状态同步到渲染对象",
+    "activeForm": "实现状态同步",
+    "status": "pending"
+  },
+  {
+    "content": "实现 WASD 键盘控制玩家物体",
+    "activeForm": "实现 WASD 键盘控制",
+    "status": "pending"
+  },
+  {
+    "content": "编写单元测试",
+    "activeForm": "编写单元测试",
+    "status": "pending"
+  },
+  {
+    "content": "构建验证并生成可执行文件",
+    "activeForm": "构建验证并生成可执行文件",
+    "status": "pending"
+  },
+  {
+    "content": "编写配套文档",
+    "activeForm": "编写配套文档",
     "status": "pending"
   }
 ]
